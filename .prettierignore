@@ -1,0 +1,6 @@
+coverage
+reports
+docs/.vuepress/dist
+config/**/*.json
+views/**/html.hbs
+views/emails/index.js

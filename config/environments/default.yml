@@ -1,0 +1,73 @@
+port: 3000
+timeout: 6e+3 # 6 seconds, in milliseconds. Default Heroku is 30s
+proxy: false
+# for CloudFlare: https://support.cloudflare.com/hc/en-us/articles/200170986-How-does-Cloudflare-handle-HTTP-Request-headers-
+# requestId:
+#   headerName: Cf-Ray
+
+frontend:
+  url: localhost:3000
+
+logger:
+  options:
+    base: null
+    level: info
+    timestamp: true
+    prettyPrint:
+      translateTime: true
+  # https://github.com/fastify/fastify/blob/master/lib/logger.js
+  serializers:
+    req:
+      - id
+      - method
+      - url
+      - user
+    res:
+      - statusCode
+      - statusMessage
+      - headers
+
+session:
+  secret: nyaa
+  resave: false
+  rolling: false
+  saveUninitialized: false # GDPR compliance
+  cookie:
+    sameSite: lax # CSRF protection
+    maxAge: 86400e+3 # 1 day, in milliseconds
+    rememberMe: 2.592e+9 # 30 days, in milliseconds
+
+jwt:
+  secret: aayn
+
+ratelimit:
+  max: 0
+
+redis:
+  url: redis://localhost
+
+# https://github.com/OptimalBits/bull/blob/develop/REFERENCE.md#queue
+queue:
+  default:
+    defaultJobOptions:
+      removeOnComplete: true
+  # extends default queue
+  mail:
+    defaultJobOptions:
+      removeOnFail: 3000 # we don't need to store too many failed email "jobs"
+
+knex:
+  # available clients: https://knexjs.org/#Installation-node
+  # note that while you *can* use other clients, some of the base class's "magic methods"
+  # that utilize .returning('*') will NOT be available on anything other than pg/mssql
+  client: pg
+  connection:
+    database: app
+
+mail:
+  # for maildev, we don't need credentials
+  smtp:
+    service: maildev
+  # https://nodemailer.com/message
+  defaults:
+    from: test@example.com
